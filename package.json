@@ -1,0 +1,14 @@
+{
+  "name": "ticketing-system",
+  "version": "1.0.0",
+  "description": "Ticketing system API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9",
+    "dotenv": "^8.2.0"
+  }
+}

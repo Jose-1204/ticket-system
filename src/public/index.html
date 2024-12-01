@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ticketing System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Ticketing System</h1>
+
+    <!-- Formulario para crear o actualizar tickets -->
+    <form id="ticket-form">
+      <input type="text" id="title" placeholder="Título" required />
+      <input type="text" id="description" placeholder="Descripción" required />
+      <button type="submit" id="submit-button">Crear Ticket</button>
+    </form>
+
+    <!-- Lista de tickets -->
+    <div class="ticket-list" id="ticket-list"></div>
+  </div>
+
+  <script>
+    const API_URL = "/api/tickets";
+    let editMode = false; // Para determinar si estamos creando o editando un ticket
+    let currentTicketId = null; // ID del ticket en edición
+
+    // Obtener y mostrar todos los tickets
+    const fetchTickets = async () => {
+      const ticketList = document.getElementById("ticket-list");
+      ticketList.innerHTML = ""; // Limpiar la lista
+      try {
+        const response = await fetch(API_URL);
+        const tickets = await response.json();
+
+        tickets.forEach(ticket => {
+          const div = document.createElement("div");
+          div.className = "ticket";
+          div.innerHTML = `
+            <div class="ticket-info">
+              <h3>${ticket.title}</h3>
+              <p>${ticket.description}</p>
+              <small>Estado: ${ticket.status}</small>
+            </div>
+            <div class="ticket-actions">
+              <button class="edit-btn" onclick="editTicket('${ticket._id}', '${ticket.title}', '${ticket.description}')">Editar</button>
+              <button class="delete-btn" onclick="deleteTicket('${ticket._id}')">Eliminar</button>
+            </div>
+          `;
+          ticketList.appendChild(div);
+        });
+      } catch (error) {
+        console.error("Error al obtener tickets:", error);
+      }
+    };
+
+    // Crear o actualizar un ticket
+    const createOrUpdateTicket = async (e) => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const description = document.getElementById("description").value;
+
+      try {
+        if (editMode) {
+          // Actualizar ticket
+          await fetch(`${API_URL}/${currentTicketId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, description })
+          });
+          editMode = false; // Salir del modo edicion
+          currentTicketId = null; // Limpiar ID actual
+          document.getElementById("submit-button").textContent = "Crear Ticket";
+        } else {
+          // Crear ticket
+          await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, description })
+          });
+        }
+        document.getElementById("ticket-form").reset(); // Limpiar formulario
+        fetchTickets(); // Actualizar lista de tickets
+      } catch (error) {
+        console.error("Error al crear o actualizar ticket:", error);
+      }
+    };
+
+    // Eliminar un ticket
+    const deleteTicket = async (id) => {
+      try {
+        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        fetchTickets(); // Actualizar lista de tickets
+      } catch (error) {
+        console.error("Error al eliminar ticket:", error);
+      }
+    };
+
+    // Editar un ticket
+    const editTicket = (id, title, description) => {
+      document.getElementById("title").value = title;
+      document.getElementById("description").value = description;
+      editMode = true; // Entrar en modo edicion
+      currentTicketId = id; // Guardar el ID del ticket en edicion
+      document.getElementById("submit-button").textContent = "Actualizar Ticket";
+    };
+
+    // Inicializar
+    document.getElementById("ticket-form").addEventListener("submit", createOrUpdateTicket);
+    fetchTickets(); // Cargar tickets al inicio
+  </script>
+</body>
+</html>
+
