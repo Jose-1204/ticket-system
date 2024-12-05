@@ -1,7 +1,7 @@
 // src/app.js
 
 const express = require("express"); //Framework
-const ticketRoutes = require("./routes/ticketRoutes"); // importar rutas de tickets
+const ticketRoutes = require("./src/routes/ticketRoutes"); // importar rutas de tickets
 
 const app = express(); // Crea la aplicacion Express
 const path = require("path"); // Importar módulo para manejar rutas

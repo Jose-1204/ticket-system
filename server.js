@@ -1,4 +1,4 @@
-const app = require("./src/app"); //importar app
+const app = require("./app"); //importar app
 const connectDB = require("./src/database/mongoose"); // Importar la funcion de conexion
 
 const PORT = 4000;
