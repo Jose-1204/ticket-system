@@ -12,4 +12,3 @@ const ticketSchema = new mongoose.Schema({
 
 // Crear el modelo a partir del esquema
 module.exports = mongoose.model('Ticket', ticketSchema);
-
